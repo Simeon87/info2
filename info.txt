@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<style>
+canvas {
+    border:1px solid #d3d3d3;
+    background-color: #f1f1f1;
+}
+</style>
+</head>
+<body onload="startGame()">
+<script>
+
+function myFunction(op) {
+    d = op;
+}
+
+var myGamePiece;
+var d = 3;
+
+function startGame() {
+    myGamePiece = new component(30, 30, "red", 80, 75);
+    myGameArea.start();
+}
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = 1200;
+        this.canvas.height = 800;
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.interval = setInterval(updateGameArea, 20);        
+    },
+    stop : function() {
+        clearInterval(this.interval);
+    },    
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+function component(width, height, color, x, y, type) {
+    this.type = type;
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;    
+    this.i = 0;
+    this.speedX = 0;
+    this.speedY = 0;    
+    this.gravity = 0.1;
+    this.gravitySpeed = 0;
+    this.bounce = 1;
+    this.update = function() {
+        ctx = myGameArea.context;
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.width, this.height);
+    }
+    this.newPos = function() {
+        if (d == 1) {
+            this.gravitySpeed += this.gravity;
+            this.x += this.speedX - this.gravitySpeed;
+            this.y += this.speedY;
+        }
+        if (d == 4) {
+            this.gravitySpeed += this.gravity;
+            this.x -= this.speedX;
+            this.y -= (this.speedY + this.gravitySpeed);
+        }
+        if (d == 2) {
+            this.gravitySpeed += this.gravity;
+            this.x -= this.speedX - this.gravitySpeed;
+            this.y += this.speedY;
+        }
+        if (d == 3) {
+            this.gravitySpeed += this.gravity;
+            this.x += this.speedX;
+            this.y += this.speedY + this.gravitySpeed;
+        }
+        this.hitBottom();
+    }
+    this.hitBottom = function() {
+        var rockbottom = myGameArea.canvas.height - this.height;
+        if (this.y > rockbottom) {
+            this.y = rockbottom;
+            this.gravitySpeed = -(this.gravitySpeed * this.bounce);
+        }
+        var rocktop = myGameArea.canvas.height;
+        if (this.y < 0) {
+            this.y = 0;
+            this.gravitySpeed = -(this.gravitySpeed * this.bounce);
+        }
+        if (this.x < 0) {
+            this.x = 0;
+            this.gravitySpeed = -(this.gravitySpeed * this.bounce);
+        }
+        if (this.x > 500) {
+            this.x = 500;
+            this.gravitySpeed = -(this.gravitySpeed * this.bounce);
+        }
+        console.log(this.x);
+    }
+}
+
+function updateGameArea() {
+    myGameArea.clear();
+    myGamePiece.newPos();
+    myGamePiece.update();
+}
+
+</script>
+
+
+<p> </p>
+
+<button onclick='myFunction(4)'>up</button>
+<button onclick='myFunction(2)'>left</button>
+<button onclick='myFunction(1)'>right</button>
+<button onclick='myFunction(3)'>down</button>
+
+
+</body>
+</html>
